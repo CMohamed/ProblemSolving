@@ -7,7 +7,7 @@ void printSpaces(int id){
 
 int main(){
     int id=0;
-    string l;
+    string l = "{{a,b,c}, d}";
     cin>>l;
     int i=0;
     while(i<l.size()){
