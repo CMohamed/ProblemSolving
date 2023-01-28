@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 class Node {
@@ -25,12 +22,57 @@ class Node {
     }
 }
 
+class RankedNode extends Node {
+    public int rank = 1;
+
+    public RankedNode(int value) {
+        super(value);
+    }
+
+}
+
 public class Solution {
     public static void main(String[] args) {
         solveC();
     }
 
 
+    /*
+    autor: mouhssin
+     */
+    public static void solveCBis() {
+        Scanner in = new Scanner(System.in);
+        int t = in.nextInt();
+        for (int i = 0; i < t; i++) {
+            int n = in.nextInt();
+            RankedNode[] ranks = new RankedNode[n+1];
+            for (int j = 0; j <= n; j++) {
+                ranks[j] = new RankedNode(j);
+            }
+            ranks[0].rank = 0;
+            // fill the array with 0
+            for (int j = 0; j < n; j++) {
+                int previous = in.nextInt();
+                // here a permutation without a number
+                for (int k = 1; k < n-1; k++) {
+                    int tmp = in.nextInt();
+                    ranks[tmp].rank = Math.max(ranks[tmp].rank, ranks[previous].rank + 1);
+                    previous = tmp;
+                }
+            }
+            Arrays.sort(ranks, new Comparator<RankedNode>() {
+                @Override
+                public int compare(RankedNode o1, RankedNode o2) {
+                    return o1.rank - o2.rank;
+                }
+            });
+
+            for (int j = 1; j < n; j++) {
+                System.out.print(ranks[j].value + " ");
+            }
+            System.out.println(ranks[n].value);
+        }
+    }
 
     public static void solveC() {
         Scanner in = new Scanner(System.in);
@@ -38,7 +80,7 @@ public class Solution {
         for (int i = 0; i < t; i++) {
             int n = in.nextInt();
             Node[] nodes = new Node[n+1];
-            System.out.println("--------------- case :" + i + "-------------");
+            //System.out.println("--------------- case :" + i + "-------------");
             for (int j = 0; j < n; j++) {
                 int previous = 0;
                 int tmp = 0;
@@ -63,7 +105,7 @@ public class Solution {
                         if (nodes[previous].rights.size() >= 3) {
                             int rightIndex = nodes[previous].rights.get(0);
                             if (nodes[previous].rights.get(1) == nodes[previous].rights.get(2)) {
-                                rightIndex = nodes[previous].rights.get(0);
+                                rightIndex = nodes[previous].rights.get(1);
                             }
                             nodes[previous].right = nodes[rightIndex];
                             nodes[rightIndex].left = nodes[previous];
@@ -71,7 +113,7 @@ public class Solution {
                         if (nodes[tmp].lefts.size() >= 3) {
                             int leftIndex = nodes[tmp].lefts.get(0);
                             if (nodes[tmp].lefts.get(1) == nodes[tmp].lefts.get(2)) {
-                                leftIndex = nodes[previous].lefts.get(0);
+                                leftIndex = nodes[tmp].lefts.get(1);
                             }
                             nodes[tmp].left = nodes[leftIndex];
                             nodes[leftIndex].right = nodes[tmp];
@@ -79,8 +121,27 @@ public class Solution {
                     }
                 }
             }
-            for (int j = 1; j < n+1; j++) {
-                System.out.println(nodes[j]);
+            if (n > 3) {
+                Node leftMostNode = null;
+                for (int j = 1; j < n+1; j++) {
+                    // System.out.println(nodes[j]);
+                    if (nodes[j].left == null) leftMostNode = nodes[j];
+                }
+                while(leftMostNode.right != null) {
+                    System.out.print(leftMostNode.value + " ");
+                    leftMostNode = leftMostNode.right;
+                }
+                System.out.println(leftMostNode.value);
+            } else {
+                Node middleNode = null;
+                for (int j = 1; j < n+1; j++) {
+                    if (nodes[j].rights.size() == 1 && nodes[j].lefts.size() == 1) {
+                        middleNode = nodes[j];
+                        System.out.print(middleNode.lefts.get(0) + " ");
+                        System.out.print(middleNode.value + " ");
+                        System.out.println(middleNode.rights.get(0));
+                    }
+                }
             }
         }
     }
@@ -123,7 +184,6 @@ public class Solution {
             boolean stillCorrect = true;
             int delta = 0;
             for (int j = 0; j < n.length() && stillCorrect; j++) {
-
                 if (PI.charAt(j) == '.') {
                     delta = 1;
                 }
